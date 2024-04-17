@@ -1,15 +1,23 @@
 <?php
 declare(strict_types=1);
 
-require_once("loader.php");
-require_once("Inputs/CommandLineInput.php");
+require ("vendor/autoload.php");
+
+use Factories\OperationFactory;
+use Inputs\CommandLineInput;
+use Loggers\FileLogger;
+use Processors\FileProcessor;
 
 try {
-    [$action, $file] = \Inputs\CommandLineInput::parseOptions();
-    $operation = \Factories\OperationFactory::createOperation($action);
-    $logger = new \Loggers\FileLogger();
-    $processor = new \Processors\FileProcessor($logger);
+    [$action, $file] = CommandLineInput::parseOptions();
+    $operation = OperationFactory::createOperation($action);
+    $logger = new FileLogger();
+    $processor = new FileProcessor($logger);
     $processor->process($file, $operation);
+
+    return CommandLineInput::COMMAND_SUCCESS;
 } catch (\Exception $exception) {
     echo $exception->getMessage();
+
+    return CommandLineInput::COMMAND_FAILURE;
 }

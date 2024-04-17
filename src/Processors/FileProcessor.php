@@ -8,14 +8,21 @@ use Interfaces\OperationInterface;
 
 class FileProcessor
 {
+    /**
+     * @param LoggerInterface $logger
+     */
     public function __construct(private LoggerInterface $logger)
     {
     }
 
+    /**
+     * @param string $file
+     * @param OperationInterface $operation
+     * @return void
+     */
     public function process(string $file, OperationInterface $operation): void
     {
-        $this->logger->log(sprintf("Started %s", $operation->getClassName()));
-
+        $log[] = sprintf("Started %s \n", $operation->getClassName());
         $fp = fopen($file, "r");
         if (!$fp) {
             throw new \RuntimeException("File could not be opened.");
@@ -24,30 +31,36 @@ class FileProcessor
             $a = (int) preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data[0]);
             $b = (int) preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data[1]);
             if ($operation->isValid($a, $b)) {
-                try {
-                    $result = $operation->execute($a, $b);
-                    if ($result !== null) {
-                        $this->writeResult($a, $b, $result);
-                    }
-                } catch (\InvalidArgumentException $e) {
-                    $this->logger->log("Error: " . $e->getMessage());
+                $result = $operation->execute($a, $b);
+                if ($result !== null) {
+                    $csvData[] = [$a, $b, $result];
                 }
             } else {
-                $this->logger->log(sprintf("numbers are %d and %d are wrong:", $a, $b));
+                $log[]= sprintf("numbers are %d and %d are wrong \n", $a, $b);
             }
         }
+
+        if(!empty($csvData)){
+            $this->writeResult($csvData);
+        }
         fclose($fp);
-        $this->logger->log(sprintf("Finished %s \n", $operation->getClassName()));
+        $log[] = sprintf("Finished %s \n", $operation->getClassName());
+        $this->logger->log($log);
     }
 
-    private function writeResult(int $a, int $b, int $result): void
+    /**
+     * @param array $data
+     * @return void
+     */
+    private function writeResult(array $data): void
     {
-        $fp = fopen("result/result.csv", "a+");
+        $fp = fopen("result/result.csv", "w");
         if (!$fp) {
             throw new \RuntimeException("Result file could not be opened.");
         }
-        $data = "$a;$b;$result\n";
-        fwrite($fp, $data);
+        foreach ($data as $row) {
+            fputcsv($fp, $row, ';');
+        }
         fclose($fp);
     }
 }

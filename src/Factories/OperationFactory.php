@@ -11,6 +11,10 @@ use Operations\PlusOperation;
 
 class OperationFactory
 {
+    /**
+     * @param string $action
+     * @return OperationInterface
+     */
     public static function createOperation(string $action): OperationInterface
     {
         return match ($action) {

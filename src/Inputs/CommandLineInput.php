@@ -5,6 +5,12 @@ namespace Inputs;
 
 class CommandLineInput
 {
+    public const COMMAND_SUCCESS = 0;
+    public const COMMAND_FAILURE = -1;
+
+    /**
+     * @return array
+     */
     public static function parseOptions(): array
     {
         $shortopts = "a:f:";

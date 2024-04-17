@@ -6,11 +6,21 @@ use Interfaces\OperationInterface;
 
 class DivisionOperation implements OperationInterface
 {
+    /**
+     * @param int $a
+     * @param int $b
+     * @return int|null
+     */
     public function execute(int $a, int $b): ?int
     {
         return $a / $b;
     }
 
+    /**
+     * @param int $a
+     * @param int $b
+     * @return bool
+     */
     public function isValid(int $a, int $b): bool
     {
         return match (true) {
@@ -21,6 +31,9 @@ class DivisionOperation implements OperationInterface
         };
     }
 
+    /**
+     * @return string
+     */
     public function getClassName(): string
     {
         return 'Division Operation';

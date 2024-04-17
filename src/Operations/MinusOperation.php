@@ -6,16 +6,29 @@ use Interfaces\OperationInterface;
 
 class MinusOperation implements OperationInterface
 {
+    /**
+     * @param int $a
+     * @param int $b
+     * @return int|null
+     */
     public function execute(int $a, int $b): ?int
     {
         return $a - $b;
     }
 
+    /**
+     * @param int $a
+     * @param int $b
+     * @return bool
+     */
     public function isValid(int $a, int $b): bool
     {
         return (($a - $b) > 0);
     }
 
+    /**
+     * @return string
+     */
     public function getClassName(): string
     {
         return 'Minus Operation';
